@@ -1,0 +1,128 @@
+/**
+ * Global Base Styles — Editorial Luxury + Liquid Glass
+ * Hybrid: Serif display + Sans body, warm gold accent, deep noir backgrounds
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --noir-950: #050505;
+  --noir-900: #0a0a0a;
+  --noir-800: #111111;
+  --noir-700: #181818;
+  --noir-600: #222222;
+  --noir-500: #2e2e2e;
+  --noir-400: #444444;
+  --noir-300: #666666;
+
+  --cream: #ede8e0;
+  --cream-dim: #c4bfb5;
+  --warm-gray: #918a82;
+  --warm-muted: #5c5650;
+
+  --gold: #c9a96e;
+  --gold-light: #d4b87a;
+  --gold-dark: #a88c55;
+
+  --success: #6ec991;
+  --error: #d4614e;
+  --warning: #d4a84e;
+
+  --font-serif: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { overflow-x: hidden; width: 100%; }
+
+body {
+  background-color: var(--noir-900);
+  color: var(--cream);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* --- Typography --- */
+h1, h2, h3, h4 { line-height: 1.1; margin-bottom: 1rem; }
+h1, h2 { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.01em; }
+h3, h4 { font-family: var(--font-sans); font-weight: 600; }
+
+p { color: var(--warm-gray); line-height: 1.8; margin-bottom: 1rem; max-width: 60ch; }
+a { color: var(--gold); text-decoration: none; transition: color 0.3s var(--ease-out); }
+a:hover { color: var(--gold-light); }
+
+code { font-family: var(--font-mono); font-size: 0.85rem; background: var(--noir-700); padding: 0.2rem 0.5rem; border-radius: 4px; color: var(--gold-light); }
+pre { background: var(--noir-800); padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; margin-bottom: 1rem; }
+pre code { background: transparent; padding: 0; color: var(--cream); }
+blockquote { border-left: 3px solid var(--gold); padding-left: 1.25rem; margin: 1.5rem 0; color: var(--warm-gray); font-style: italic; }
+
+/* --- Utility classes --- */
+.font-serif { font-family: var(--font-serif); }
+.font-sans { font-family: var(--font-sans); }
+.text-display {
+  font-family: var(--font-serif);
+  font-size: clamp(2.8rem, 6vw, 6rem);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+}
+
+.glass {
+  background: rgba(18, 18, 18, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* --- Marquee --- */
+.marquee-track { overflow: hidden; width: 100%; }
+.marquee-inner { display: flex; width: max-content; animation: marquee-scroll 50s linear infinite; }
+.marquee-track:hover .marquee-inner { animation-play-state: paused; }
+@keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* --- Animations --- */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-up { animation: fadeUp 0.5s var(--ease-smooth) both; }
+
+/* --- Prevent horizontal scroll --- */
+main { overflow-x: hidden; width: 100%; max-width: 100%; }
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--noir-900); }
+::-webkit-scrollbar-thumb { background: var(--noir-600); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+* { scrollbar-color: var(--noir-600) var(--noir-900); scrollbar-width: thin; }
+
+/* --- Focus & Selection --- */
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+::selection { background-color: var(--gold); color: var(--noir-900); }
+
+/* --- Prose (markdown) --- */
+.prose { color: var(--warm-gray); }
+.prose h1, .prose h2, .prose h3 { color: var(--cream); margin-top: 2rem; }
+.prose a { color: var(--gold); font-weight: 500; }
+.prose a:hover { color: var(--gold-light); }
+.prose code { color: var(--gold-light); }
+.prose pre { background: var(--noir-800); border: 1px solid rgba(255,255,255,0.06); }
+.prose blockquote { border-left-color: var(--gold); color: var(--warm-gray); }
+.prose img { border-radius: 0.75rem; max-width: 100%; }
+.prose-invert { color: var(--warm-gray); }
+.prose-invert h1, .prose-invert h2, .prose-invert h3 { color: var(--cream); }
+.prose-invert a { color: var(--gold); }
+.prose-invert strong { color: var(--cream); }

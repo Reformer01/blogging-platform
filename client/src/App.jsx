@@ -9,7 +9,6 @@ import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import './App.css';
 
 function App() {
   const { user, loading, checkAuth } = useAuthStore();
@@ -25,26 +24,28 @@ function App() {
   return (
     <BrowserRouter>
       <Navigation />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/blog/:slug" element={<BlogPost />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        
-        {user && (
-          <>
-            <Route path="/editor" element={<Editor />} />
-            <Route path="/editor/:id" element={<Editor />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-          </>
-        )}
+      <main className="overflow-x-hidden w-full max-w-full">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          
+          {user && (
+            <>
+              <Route path="/editor" element={<Editor />} />
+              <Route path="/editor/:id" element={<Editor />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+            </>
+          )}
 
-        {user?.role === 'admin' && (
-          <Route path="/admin" element={<AdminDashboard />} />
-        )}
+          {user?.role === 'admin' && (
+            <Route path="/admin" element={<AdminDashboard />} />
+          )}
 
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </main>
     </BrowserRouter>
   );
 }

@@ -1,8 +1,8 @@
-# 🚀 BlogHub - Full-Stack Blogging Platform
+# BlogHub - Full-Stack Blogging Platform
 
 A modern, production-ready blogging platform built with React, Node.js, and PostgreSQL.
 
-## ✨ Features
+## Features
 
 - **User Authentication** - JWT-based auth with secure password hashing
 - **Post Management** - Create, edit, publish, and delete blog posts
@@ -15,7 +15,7 @@ A modern, production-ready blogging platform built with React, Node.js, and Post
 - **Responsive Design** - Beautiful UI on all devices
 - **Modern Stack** - Latest React, Node.js, and database best practices
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 **Backend:**
 - Node.js + Express
@@ -32,7 +32,7 @@ A modern, production-ready blogging platform built with React, Node.js, and Post
 - React Quill (Rich Text Editor)
 - Lucide Icons
 
-## 📦 Setup Instructions
+## Setup Instructions
 
 ### Prerequisites
 - Node.js 16+
@@ -74,7 +74,7 @@ npm run dev
 Backend will run on `http://localhost:3000`
 Frontend will run on `http://localhost:5173`
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
@@ -95,7 +95,7 @@ Frontend will run on `http://localhost:5173`
 - `GET /api/admin/posts` - All posts (admin only)
 - `PATCH /api/admin/comments/:id` - Moderate comments (admin only)
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### Users Table
 ```sql
@@ -143,7 +143,7 @@ Frontend will run on `http://localhost:5173`
 - created_at, updated_at
 ```
 
-## 🚀 Deployment
+## Deployment
 
 ### Deploy to Vercel (Frontend)
 ```bash
@@ -161,7 +161,7 @@ vercel
    - `CLIENT_URL`
 4. Deploy!
 
-## 📈 Future Enhancements
+## Future Enhancements
 
 - [ ] Comment system with nested replies
 - [ ] Tags and categories
@@ -176,7 +176,7 @@ vercel
 - [ ] Newsletter subscription
 - [ ] Dark/Light theme toggle
 
-## 📝 Project Structure
+## Project Structure
 
 ```
 blogging-platform/
@@ -213,7 +213,7 @@ blogging-platform/
 └── README.md
 ```
 
-## 🔐 Security Features
+## Security Features
 
 - Bcrypt password hashing
 - JWT token authentication
@@ -223,18 +223,18 @@ blogging-platform/
 - Input validation
 - Role-based access control
 
-## 📄 License
+## License
 
 MIT License - feel free to use this project for portfolio or production
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Feel free to open issues and pull requests.
 
-## 💬 Support
+## Support
 
 Have questions? Create an issue or contact me!
 
 ---
 
-**Built with ❤️ by Reformer01**
+**Built by Reformer01**
