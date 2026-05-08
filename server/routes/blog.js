@@ -1,41 +1,27 @@
 import express from 'express';
 import { pool } from '../index.js';
+import { BlogService } from '../services/blog.service.js';
 import { authenticateToken } from '../middleware/auth.js';
-import slugify from 'slugify';
+import { readRateLimit } from '../middleware/readRateLimits.js';
+import { bumpFeedCache, feedLru } from '../shared/cache.js';
 
 const router = express.Router();
 
 // Get all published posts with pagination
-router.get('/posts', async (req, res, next) => {
+router.get('/posts', readRateLimit, async (req, res, next) => {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(20, parseInt(req.query.limit) || 10);
-    const offset = (page - 1) * limit;
 
-    const result = await pool.query(
-      `SELECT 
-        p.id, p.title, p.slug, p.excerpt, p.featured_image_url,
-        p.view_count, p.published_at, p.created_at,
-        u.username, u.full_name, u.avatar_url
-      FROM posts p
-      JOIN users u ON p.author_id = u.id
-      WHERE p.status = 'published'
-      ORDER BY p.published_at DESC
-      LIMIT $1 OFFSET $2`,
-      [limit, offset]
-    );
-
-    const countResult = await pool.query(
-      'SELECT COUNT(*) FROM posts WHERE status = $1',
-      ['published']
-    );
+    const posts = await BlogService.getPosts(page, limit);
+    const total = await BlogService.countPublished();
 
     res.json({
-      posts: result.rows,
-      total: parseInt(countResult.rows[0].count),
+      posts,
+      total,
       page,
       limit,
-      pages: Math.ceil(parseInt(countResult.rows[0].count) / limit),
+      pages: Math.ceil(total / limit),
     });
   } catch (error) {
     next(error);
@@ -43,27 +29,15 @@ router.get('/posts', async (req, res, next) => {
 });
 
 // Get single post by slug
-router.get('/posts/:slug', async (req, res, next) => {
+router.get('/posts/:slug', readRateLimit, async (req, res, next) => {
   try {
-    const result = await pool.query(
-      `SELECT 
-        p.id, p.title, p.content, p.slug, p.featured_image_url,
-        p.view_count, p.published_at, p.created_at,
-        u.id as author_id, u.username, u.full_name, u.bio, u.avatar_url
-      FROM posts p
-      JOIN users u ON p.author_id = u.id
-      WHERE p.slug = $1 AND p.status = 'published'`,
-      [req.params.slug]
-    );
+    const post = await BlogService.getPostBySlug(req.params.slug);
 
-    if (result.rows.length === 0) {
+    if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
 
-    // Increment view count
-    await pool.query('UPDATE posts SET view_count = view_count + 1 WHERE id = $1', [result.rows[0].id]);
-
-    res.json(result.rows[0]);
+    res.json(post);
   } catch (error) {
     next(error);
   }
@@ -72,15 +46,8 @@ router.get('/posts/:slug', async (req, res, next) => {
 // Get user's posts (drafts + published)
 router.get('/my-posts', authenticateToken, async (req, res, next) => {
   try {
-    const result = await pool.query(
-      `SELECT id, title, slug, excerpt, status, published_at, created_at, updated_at
-       FROM posts
-       WHERE author_id = $1
-       ORDER BY updated_at DESC`,
-      [req.user.id]
-    );
-
-    res.json(result.rows);
+    const rows = await BlogService.listMyPostsAll(req.user.id);
+    res.json(rows);
   } catch (error) {
     next(error);
   }
@@ -90,26 +57,19 @@ router.get('/my-posts', authenticateToken, async (req, res, next) => {
 router.post('/posts', authenticateToken, async (req, res, next) => {
   try {
     const { title, content, excerpt, featuredImageUrl, status = 'draft' } = req.body;
+    const authorId = req.user.id;
 
     if (!title || !content) {
-      return res.status(400).json({ error: 'Title and content required' });
+      return res.status(400).json({ error: 'Title and content are required' });
     }
 
-    const slug = slugify(title, { lower: true, strict: true });
-    const publishedAt = status === 'published' ? new Date() : null;
-
-    const result = await pool.query(
-      `INSERT INTO posts (author_id, title, slug, content, excerpt, featured_image_url, status, published_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, title, slug, status, created_at`,
-      [req.user.id, title, slug, content, excerpt, featuredImageUrl, status, publishedAt]
+    const post = await BlogService.createPost(
+      { title, content, excerpt, featuredImageUrl, status },
+      authorId
     );
 
-    res.status(201).json(result.rows[0]);
+    res.status(201).json(post);
   } catch (error) {
-    if (error.code === '23505') {
-      return res.status(400).json({ error: 'A post with this title already exists' });
-    }
     next(error);
   }
 });
@@ -129,12 +89,15 @@ router.put('/posts/:id', authenticateToken, async (req, res, next) => {
     const publishedAt = status === 'published' ? new Date() : null;
 
     const result = await pool.query(
-      `UPDATE posts 
+      `UPDATE posts
        SET title = $1, content = $2, excerpt = $3, featured_image_url = $4, status = $5, published_at = $6, updated_at = CURRENT_TIMESTAMP
        WHERE id = $7
        RETURNING id, title, slug, status, updated_at`,
       [title, content, excerpt, featuredImageUrl, status, publishedAt, id]
     );
+
+    bumpFeedCache();
+    feedLru.clear();
 
     res.json(result.rows[0]);
   } catch (error) {
@@ -153,6 +116,10 @@ router.delete('/posts/:id', authenticateToken, async (req, res, next) => {
     }
 
     await pool.query('DELETE FROM posts WHERE id = $1', [id]);
+
+    bumpFeedCache();
+    feedLru.clear();
+
     res.json({ message: 'Post deleted' });
   } catch (error) {
     next(error);

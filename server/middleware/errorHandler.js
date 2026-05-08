@@ -1,5 +1,6 @@
 export const errorHandler = (err, req, res, next) => {
-  console.error('Error:', err);
+  const rid = req.id || req.headers['x-request-id'];
+  console.error(rid ? `[${rid}] Error:` : 'Error:', err);
 
   if (err.name === 'ValidationError') {
     return res.status(400).json({ error: err.message });

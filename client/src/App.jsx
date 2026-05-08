@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import MagicLinkCallback from './pages/MagicLinkCallback';
 
 function App() {
   const { user, loading, checkAuth } = useAuthStore();
@@ -30,6 +31,7 @@ function App() {
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/auth/magic" element={<MagicLinkCallback />} />
           
           {user && (
             <>

@@ -1,11 +1,12 @@
 import express from 'express';
 import { pool } from '../index.js';
 import { authenticateToken, authorizeRole } from '../middleware/auth.js';
+import { readRateLimit } from '../middleware/readRateLimits.js';
 
 const router = express.Router();
 
 // Get comments for a post
-router.get('/posts/:postId', async (req, res, next) => {
+router.get('/posts/:postId', readRateLimit, async (req, res, next) => {
   try {
     const result = await pool.query(
       `SELECT c.id, c.content, c.status, c.created_at,

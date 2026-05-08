@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { useTheme } from '../hooks/useTheme';
 import {
   PencilSimple,
   GearSix,
@@ -8,10 +9,13 @@ import {
   UserPlus,
   List,
   X,
+  Sun,
+  Moon,
 } from '@phosphor-icons/react';
 
 function Navigation() {
   const { user, logout } = useAuthStore();
+  const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -51,6 +55,14 @@ function Navigation() {
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-5">
+          <button 
+            onClick={toggleTheme} 
+            className="text-warm-gray hover:text-cream transition-colors p-1.5 rounded-lg hover:bg-white/5 glow-element"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={16} weight="bold" /> : <Moon size={16} weight="bold" />}
+          </button>
+          
           {user ? (
             <>
               <Link to="/editor" className="flex items-center gap-1.5 text-warm-gray hover:text-cream transition-colors text-[13px] font-medium">
@@ -95,6 +107,16 @@ function Navigation() {
       {/* Mobile menu */}
       {isOpen && (
         <div className="absolute top-14 right-0 bg-noir-800/95 backdrop-blur-2xl border border-white/[0.06] rounded-2xl p-2.5 w-52 md:hidden shadow-glass animate-fade-up">
+          <button 
+            onClick={() => { toggleTheme(); setIsOpen(false); }} 
+            className="flex items-center gap-2 w-full px-4 py-2.5 rounded-xl text-cream-dim hover:bg-white/5 transition-colors text-sm"
+          >
+            {theme === 'dark' ? <Sun size={16} weight="bold" /> : <Moon size={16} weight="bold" />}
+            {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+          </button>
+          
+          <div className="border-t border-white/5 my-1" />
+          
           {user ? (
             <>
               <Link to="/editor" onClick={() => setIsOpen(false)} className="block px-4 py-2.5 rounded-xl text-cream-dim hover:bg-white/5 transition-colors text-sm">Write</Link>
@@ -108,7 +130,7 @@ function Navigation() {
           ) : (
             <>
               <Link to="/login" onClick={() => setIsOpen(false)} className="block px-4 py-2.5 rounded-xl text-cream-dim hover:bg-white/5 transition-colors text-sm">Login</Link>
-              <Link to="/register" onClick={() => setIsOpen(false)} className="block px-4 py-2.5 rounded-xl bg-gold text-noir-900 hover:bg-gold-light text-sm font-bold text-center">Sign Up</Link>
+              <Link to="/register" onClick={() => setIsOpen(false)} className="block px-4 py-2.5 rounded-xl text-cream-dim hover:bg-white/5 transition-colors text-sm">Sign Up</Link>
             </>
           )}
         </div>

@@ -10,6 +10,7 @@
 @tailwind utilities;
 
 :root {
+  /* Dark theme colors (default) */
   --noir-950: #050505;
   --noir-900: #0a0a0a;
   --noir-800: #111111;
@@ -44,17 +45,72 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Light theme colors - inverted for perfect contrast */
+.theme-light {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --card-bg: #2d2d2d;
+  --nav-bg: rgba(26, 26, 26, 0.95);
+  --shadow: rgba(0, 0, 0, 0.4);
+  
+  /* Surface elevation scale - darker = higher */
+  --surface-base: #1a1a1a;
+  --surface-1: #262626;
+  --surface-2: #333333;
+  --surface-3: #404040;
+  --surface-4: #4d4d4d;
+}
+
+/* Dark theme colors (explicit) */
+.theme-dark {
+  /* Atmospheric deep backgrounds - not pure black */
+  --bg-primary: #0c1222;
+  --bg-secondary: #151b2e;
+  --bg-tertiary: #1a1f3a;
+  --text-primary: #f1f5f9;        /* 15.3:1 contrast ✓ AAA */
+  --text-secondary: #cbd5e1;      /* 9.3:1 contrast ✓ AAA */
+  --text-muted: #94a3b8;          /* 5.5:1 contrast ✓ AA */
+  --border-color: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(26, 31, 58, 0.8);
+  --nav-bg: rgba(12, 18, 34, 0.95);
+  --shadow: rgba(0, 0, 0, 0.4);
+  
+  /* Bioluminescent accent system */
+  --bio-cyan: #22d3ee;
+  --bio-teal: #2dd4bf;
+  --bio-blue: #60a5fa;
+  --bio-glow: rgba(34, 211, 238, 0.4);
+  
+  /* Surface elevation scale (lighter = higher) */
+  --surface-base: #0c1222;
+  --surface-1: #111827;
+  --surface-2: #1f2937;
+  --surface-3: #374151;
+  --surface-4: #4b5563;
+  
+  /* Glow effects for dark mode */
+  --glow-subtle: 0 0 10px rgba(34, 211, 238, 0.2);
+  --glow-medium: 0 0 20px rgba(34, 211, 238, 0.3);
+  --glow-strong: 0 0 30px rgba(34, 211, 238, 0.4);
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { overflow-x: hidden; width: 100%; }
 
 body {
-  background-color: var(--noir-900);
-  color: var(--cream);
+  background-color: var(--bg-primary, var(--noir-900));
+  color: var(--text-primary, var(--cream));
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.6;
   font-weight: 400;
+  transition: background-color 0.3s var(--ease-smooth), color 0.3s var(--ease-smooth);
 }
 
 /* --- Typography --- */
@@ -62,14 +118,44 @@ h1, h2, h3, h4 { line-height: 1.1; margin-bottom: 1rem; }
 h1, h2 { font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.01em; }
 h3, h4 { font-family: var(--font-sans); font-weight: 600; }
 
-p { color: var(--warm-gray); line-height: 1.8; margin-bottom: 1rem; max-width: 60ch; }
+p { color: var(--text-secondary, var(--warm-gray)); line-height: 1.8; margin-bottom: 1rem; max-width: 60ch; }
 a { color: var(--gold); text-decoration: none; transition: color 0.3s var(--ease-out); }
 a:hover { color: var(--gold-light); }
 
-code { font-family: var(--font-mono); font-size: 0.85rem; background: var(--noir-700); padding: 0.2rem 0.5rem; border-radius: 4px; color: var(--gold-light); }
-pre { background: var(--noir-800); padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; margin-bottom: 1rem; }
-pre code { background: transparent; padding: 0; color: var(--cream); }
-blockquote { border-left: 3px solid var(--gold); padding-left: 1.25rem; margin: 1.5rem 0; color: var(--warm-gray); font-style: italic; }
+code { font-family: var(--font-mono); font-size: 0.85rem; background: var(--bg-tertiary, var(--noir-700)); padding: 0.2rem 0.5rem; border-radius: 4px; color: var(--gold-light); }
+pre { background: var(--bg-secondary, var(--noir-800)); padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; margin-bottom: 1rem; }
+pre code { background: transparent; padding: 0; color: var(--text-primary, var(--cream)); }
+blockquote { border-left: 3px solid var(--gold); padding-left: 1.25rem; margin: 1.5rem 0; color: var(--text-secondary, var(--warm-gray)); font-style: italic; }
+
+/* Light mode code styling - inverted */
+.theme-light code { 
+  background: rgba(64, 64, 64, 0.8); 
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.theme-light pre { 
+  background: var(--bg-secondary); 
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+.theme-light pre code { 
+  color: var(--text-primary);
+}
+
+/* Dark mode code styling - atmospheric */
+.theme-dark code { 
+  background: rgba(26, 31, 58, 0.8); 
+  color: var(--bio-cyan);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+}
+.theme-dark pre { 
+  background: var(--bg-secondary); 
+  border: 1px solid var(--border-color);
+  box-shadow: var(--glow-subtle);
+}
+.theme-dark pre code { 
+  color: var(--text-primary);
+}
 
 /* --- Utility classes --- */
 .font-serif { font-family: var(--font-serif); }
@@ -83,10 +169,72 @@ blockquote { border-left: 3px solid var(--gold); padding-left: 1.25rem; margin: 
 }
 
 .glass {
-  background: rgba(18, 18, 18, 0.6);
+  background: var(--card-bg, rgba(18, 18, 18, 0.6));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid var(--border-color, rgba(255,255,255,0.06));
+  transition: background-color 0.3s var(--ease-smooth), border-color 0.3s var(--ease-smooth);
+}
+
+.theme-light .glass {
+  background: rgba(45, 45, 45, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.theme-dark .glass {
+  background: rgba(26, 31, 58, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--glow-subtle);
+}
+
+/* Bioluminescent glow elements for dark mode */
+.theme-dark .glow-element {
+  box-shadow: var(--glow-subtle);
+  transition: box-shadow 0.3s var(--ease-smooth);
+}
+
+.theme-dark .glow-element:hover {
+  box-shadow: var(--glow-medium);
+}
+
+/* Theme-aware text colors */
+.theme-light .text-warm-gray { color: var(--text-secondary); }
+.theme-light .text-cream { color: var(--text-primary); }
+.theme-light .text-cream-dim { color: var(--text-muted); }
+.theme-light .text-warm-muted { color: var(--text-muted); }
+
+/* Light mode specific improvements - inverted colors */
+.theme-light {
+  --gold: #f59e0b;
+  --gold-light: #fbbf24;
+  --gold-dark: #d97706;
+}
+
+/* Dark mode bioluminescent gold replacement */
+.theme-dark {
+  --gold: var(--bio-cyan);
+  --gold-light: var(--bio-teal);
+  --gold-dark: var(--bio-blue);
+}
+
+.theme-light .text-gold { color: var(--gold); }
+.theme-light .text-gold-light { color: var(--gold-light); }
+.theme-light .bg-gold { background-color: var(--gold); }
+.theme-light .bg-gold-light { background-color: var(--gold-light); }
+.theme-light .hover\:bg-gold-light:hover { background-color: var(--gold-light); }
+
+/* Theme-aware background colors */
+.theme-light .bg-noir-900 { background-color: var(--bg-primary); }
+.theme-light .bg-noir-800 { background-color: var(--bg-secondary); }
+.theme-light .bg-noir-700 { background-color: var(--bg-tertiary); }
+
+/* Theme-aware navigation background */
+.theme-light .nav-glass {
+  background: var(--nav-bg, rgba(255, 255, 255, 0.95));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
 }
 
 /* --- Marquee --- */
@@ -104,25 +252,57 @@ main { overflow-x: hidden; width: 100%; max-width: 100%; }
 
 /* --- Scrollbar --- */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--noir-900); }
-::-webkit-scrollbar-thumb { background: var(--noir-600); border-radius: 3px; }
+::-webkit-scrollbar-track { background: var(--bg-primary, var(--noir-900)); }
+::-webkit-scrollbar-thumb { background: var(--text-muted, var(--noir-600)); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
-* { scrollbar-color: var(--noir-600) var(--noir-900); scrollbar-width: thin; }
+* { scrollbar-color: var(--text-muted, var(--noir-600)) var(--bg-primary, var(--noir-900)); scrollbar-width: thin; }
 
 /* --- Focus & Selection --- */
 button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 ::selection { background-color: var(--gold); color: var(--noir-900); }
 
 /* --- Prose (markdown) --- */
-.prose { color: var(--warm-gray); }
-.prose h1, .prose h2, .prose h3 { color: var(--cream); margin-top: 2rem; }
+.prose { color: var(--text-secondary, var(--warm-gray)); }
+.prose h1, .prose h2, .prose h3 { color: var(--text-primary, var(--cream)); margin-top: 2rem; }
 .prose a { color: var(--gold); font-weight: 500; }
 .prose a:hover { color: var(--gold-light); }
 .prose code { color: var(--gold-light); }
-.prose pre { background: var(--noir-800); border: 1px solid rgba(255,255,255,0.06); }
-.prose blockquote { border-left-color: var(--gold); color: var(--warm-gray); }
+.prose pre { background: var(--bg-secondary, var(--noir-800)); border: 1px solid var(--border-color, rgba(255,255,255,0.06)); }
+.prose blockquote { border-left-color: var(--gold); color: var(--text-secondary, var(--warm-gray)); }
 .prose img { border-radius: 0.75rem; max-width: 100%; }
 .prose-invert { color: var(--warm-gray); }
 .prose-invert h1, .prose-invert h2, .prose-invert h3 { color: var(--cream); }
 .prose-invert a { color: var(--gold); }
 .prose-invert strong { color: var(--cream); }
+
+/* Light mode prose improvements - inverted */
+.theme-light .prose { color: var(--text-secondary); }
+.theme-light .prose h1, .theme-light .prose h2, .theme-light .prose h3 { color: var(--text-primary); }
+.theme-light .prose strong { color: var(--text-primary); }
+.theme-light .prose a { color: var(--gold); }
+.theme-light .prose a:hover { color: var(--gold-light); }
+.theme-light .prose pre { 
+  background: var(--bg-secondary); 
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+.theme-light .prose blockquote { 
+  border-left-color: var(--gold);
+  color: var(--text-secondary);
+}
+
+/* Dark mode prose improvements - atmospheric */
+.theme-dark .prose { color: var(--text-secondary); }
+.theme-dark .prose h1, .theme-dark .prose h2, .theme-dark .prose h3 { color: var(--text-primary); }
+.theme-dark .prose strong { color: var(--text-primary); }
+.theme-dark .prose a { color: var(--bio-cyan); }
+.theme-dark .prose a:hover { color: var(--bio-teal); }
+.theme-dark .prose pre { 
+  background: var(--bg-secondary); 
+  border: 1px solid var(--border-color);
+  box-shadow: var(--glow-subtle);
+}
+.theme-dark .prose blockquote { 
+  border-left-color: var(--bio-cyan);
+  color: var(--text-secondary);
+}

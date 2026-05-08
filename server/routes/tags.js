@@ -2,12 +2,17 @@ import express from 'express';
 import { pool } from '../index.js';
 import { authenticateToken, authorizeRole } from '../middleware/auth.js';
 import slugify from 'slugify';
+import { readRateLimit } from '../middleware/readRateLimits.js';
+import { tagsLru, invalidateTagsCache } from '../shared/cache.js';
 
 const router = express.Router();
 
 // Get all tags
-router.get('/', async (req, res, next) => {
+router.get('/', readRateLimit, async (req, res, next) => {
   try {
+    const hit = tagsLru.get('all');
+    if (hit) return res.json(hit);
+
     const result = await pool.query(
       `SELECT t.id, t.name, t.slug, COUNT(pt.post_id) as post_count
        FROM tags t
@@ -15,6 +20,7 @@ router.get('/', async (req, res, next) => {
        GROUP BY t.id
        ORDER BY post_count DESC`
     );
+    tagsLru.set('all', result.rows);
     res.json(result.rows);
   } catch (error) {
     next(error);
@@ -22,7 +28,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // Get posts by tag
-router.get('/:slug/posts', async (req, res, next) => {
+router.get('/:slug/posts', readRateLimit, async (req, res, next) => {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(20, parseInt(req.query.limit) || 10);
@@ -75,6 +81,7 @@ router.post('/', authenticateToken, authorizeRole('admin'), async (req, res, nex
       [name, slug]
     );
 
+    invalidateTagsCache();
     res.status(201).json(result.rows[0]);
   } catch (error) {
     if (error.code === '23505') {

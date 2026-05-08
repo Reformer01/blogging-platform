@@ -1,11 +1,12 @@
 import express from 'express';
 import { pool } from '../index.js';
 import { authenticateToken } from '../middleware/auth.js';
+import { readRateLimit } from '../middleware/readRateLimits.js';
 
 const router = express.Router();
 
 // Get post analytics for author
-router.get('/posts/:postId', authenticateToken, async (req, res, next) => {
+router.get('/posts/:postId', authenticateToken, readRateLimit, async (req, res, next) => {
   try {
     const { postId } = req.params;
 
@@ -42,7 +43,7 @@ router.get('/posts/:postId', authenticateToken, async (req, res, next) => {
 });
 
 // Get author analytics
-router.get('/author', authenticateToken, async (req, res, next) => {
+router.get('/author', authenticateToken, readRateLimit, async (req, res, next) => {
   try {
     const stats = await Promise.all([
       // Total posts
